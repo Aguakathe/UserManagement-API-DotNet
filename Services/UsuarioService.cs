@@ -54,6 +54,10 @@ public class UsuarioService : IUsuarioService
             );
         }
 
+        var fechaNacimiento = d.FechaNacimiento!.Value;
+
+        ValidarFechaNacimiento(fechaNacimiento);
+
         // Convertir contraseña en HASH
         var passwordHash =
             BCrypt.Net.BCrypt.HashPassword(d.Password);
@@ -64,8 +68,9 @@ public class UsuarioService : IUsuarioService
             Apellido = d.Apellido.Trim(),
             Correo = correo,
             PasswordHash = passwordHash,
-            Edad = d.Edad,
-            RolId = d.RolId
+            FechaNacimiento = fechaNacimiento,
+            Universidad = d.Universidad.Trim(),
+            Semestre = d.Semestre
         };
 
         await _repo.CrearAsync(usuario);
@@ -152,10 +157,16 @@ public class UsuarioService : IUsuarioService
             );
         }
 
+        var fechaNacimiento = d.FechaNacimiento!.Value;
+
+        ValidarFechaNacimiento(fechaNacimiento);
+
         usuario.Nombre = d.Nombre.Trim();
         usuario.Apellido = d.Apellido.Trim();
         usuario.Correo = correo;
-        usuario.Edad = d.Edad;
+        usuario.FechaNacimiento = fechaNacimiento;
+        usuario.Universidad = d.Universidad.Trim();
+        usuario.Semestre = d.Semestre;
         usuario.Activo = d.Activo;
 
         await _repo.ActualizarAsync(usuario);
@@ -192,9 +203,53 @@ public class UsuarioService : IUsuarioService
             Nombre = u.Nombre,
             Apellido = u.Apellido,
             Correo = u.Correo,
-            Edad = u.Edad,
+            FechaNacimiento = u.FechaNacimiento,
+            Edad = CalcularEdad(u.FechaNacimiento),
+            Universidad = u.Universidad,
+            Semestre = u.Semestre,
             Activo = u.Activo,
             FechaCreacion = u.FechaCreacion
         };
     }
+
+    // ==========================================
+    // CÁLCULO DE EDAD (considera día, mes y año)
+    // ==========================================
+    private static int CalcularEdad(DateOnly fechaNacimiento)
+    {
+        var hoy = DateOnly.FromDateTime(DateTime.Today);
+
+        var edad = hoy.Year - fechaNacimiento.Year;
+
+        // Si este año aún no ha cumplido años, se resta uno
+        if (fechaNacimiento > hoy.AddYears(-edad))
+        {
+            edad--;
+        }
+
+        return edad;
+    }
+
+    // ==========================================
+    // VALIDAR FECHA DE NACIMIENTO
+    // ==========================================
+    private static void ValidarFechaNacimiento(DateOnly fechaNacimiento)
+    {
+        var hoy = DateOnly.FromDateTime(DateTime.Today);
+
+        if (fechaNacimiento > hoy)
+        {
+            throw new InvalidOperationException(
+                "La fecha de nacimiento no puede ser posterior a la fecha actual."
+            );
+        }
+
+        if (CalcularEdad(fechaNacimiento) > 120)
+        {
+            throw new InvalidOperationException(
+                "La fecha de nacimiento no es válida."
+            );
+        }
+    }
+
 }

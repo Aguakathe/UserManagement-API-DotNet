@@ -16,9 +16,14 @@ public class CrearUsuarioDto
     [Required, MinLength(6)]
     public string Password { get; set; } = string.Empty;
 
-    [Range(1, 120)]
-    public int Edad { get; set; }
+    // Formato JSON esperado: "yyyy-MM-dd" (ej: "2002-05-20")
+    [Required(ErrorMessage = "La fecha de nacimiento es obligatoria.")]
+    public DateOnly? FechaNacimiento { get; set; }
 
-    [Range(1, int.MaxValue)]
-    public int RolId { get; set; }
+    [Required(ErrorMessage = "La universidad es obligatoria.")]
+   [MaxLength(150)]
+   public string Universidad { get; set; } = string.Empty;
+
+   [Range(1, 10, ErrorMessage = "El semestre debe estar entre 1 y 10.")]
+   public int Semestre { get; set; }
 }

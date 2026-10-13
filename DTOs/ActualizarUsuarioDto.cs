@@ -17,8 +17,16 @@ public class ActualizarUsuarioDto
     [MaxLength(150)]
     public string Correo { get; set; } = string.Empty;
 
-    [Range(1, 120)]
-    public int Edad { get; set; }
+    [Required(ErrorMessage = "La fecha de nacimiento es obligatoria.")]
+    public DateOnly? FechaNacimiento { get; set; }
+
+    [Required(ErrorMessage = "La universidad es obligatoria.")]
+   [MaxLength(150)]
+   public string Universidad { get; set; } = string.Empty;
+
+
+    [Range(1, 10, ErrorMessage = "El semestre debe estar entre 1 y 10.")]
+    public int Semestre { get; set; }
 
     public bool Activo { get; set; }
 }

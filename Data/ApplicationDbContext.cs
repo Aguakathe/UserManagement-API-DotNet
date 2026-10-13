@@ -17,7 +17,11 @@ public class ApplicationDbContext : DbContext
     {
         m.Entity<Usuario>(e =>
         {
-            e.ToTable("Usuarios");
+            e.ToTable("Usuarios", t =>
+                t.HasCheckConstraint(
+                    "CK_Usuarios_Semestre",
+                    "Semestre BETWEEN 1 AND 10"
+           ));
 
             e.HasKey(x => x.Id);
 
@@ -27,6 +31,17 @@ public class ApplicationDbContext : DbContext
 
             e.Property(x => x.Apellido)
                 .HasMaxLength(100)
+                .IsRequired();
+
+             e.Property(x => x.FechaNacimiento)
+                .HasColumnType("date")
+                .IsRequired();
+
+            e.Property(x => x.Universidad)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            e.Property(x => x.Semestre)
                 .IsRequired();
 
             e.Property(x => x.Correo)

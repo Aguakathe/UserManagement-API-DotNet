@@ -13,11 +13,15 @@ public class Usuario
     // La contraseña NO se guarda en texto plano
     public string PasswordHash { get; set; } = string.Empty;
 
-    public int Edad { get; set; }
+    // Reemplazar Edad: la edad ahora se calcula a partir de esta fecha
+    public DateOnly FechaNacimiento { get; set; }
+
+    public string Universidad { get; set; } = string.Empty;
+
+    // Semestre válido entre 1 y 10
+   public int Semestre { get; set; }
 
     public bool Activo { get; set; } = true;
-
-    public int RolId { get; set; }
 
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
 }
